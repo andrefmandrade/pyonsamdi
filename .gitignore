@@ -1,0 +1,5 @@
+*.db
+.idea
+__*
+.env
+.vscode
