@@ -1,12 +1,11 @@
 import atexit
 import json
 import logging
-
-from matplotlib import pyplot as plt
 from datetime import datetime, timedelta
 from io import BytesIO
 from typing import Dict, List, Tuple
 
+from matplotlib import pyplot as plt
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -15,7 +14,7 @@ JSON_FILENAME = "bosses.json"
 
 class Boss:
     def __init__(self):
-        logger.info(f"Initializing bosses")
+        logger.info("Initializing bosses")
         atexit.register(self.save)
         with open(JSON_FILENAME, "r") as f:
             self.bosses = json.load(f)
@@ -23,7 +22,7 @@ class Boss:
         self.main = self.bosses["main"]
 
     def save(self) -> None:
-        logger.info(f"Saving bosses.json")
+        logger.info("Saving bosses.json")
         with open(JSON_FILENAME, "w") as f:
             json.dump(self.bosses, f)
 
@@ -31,13 +30,10 @@ class Boss:
         boss_type = boss_type.lower()
         dungeon = dungeon.title()
 
-        if not boss_type in ["mini", "main"]:
+        if boss_type not in ["mini", "main"]:
             return "Unknown boss type, please use `mini` or `main` (case insensitive!)"
 
-        if boss_type == "mini":
-            bosses = self.mini
-        else:
-            bosses = self.main
+        bosses = self.mini if boss_type == "mini" else self.main
 
         if dungeon not in bosses:
             return "Unknown dungeon, please use same name as in `!status` (case insensitive!)"
@@ -59,7 +55,7 @@ class Boss:
         dungeon_times: Dict,
         closed_window: int,
         open_window: int,
-        thresholds: Tuple[int],
+        thresholds: Tuple[int, int, int],
     ) -> Tuple[Dict, List]:
         xy = {}
         colors = []
@@ -68,7 +64,9 @@ class Boss:
         for dungeon, last_time in dungeon_times.items():
             hours = (now - datetime.fromtimestamp(last_time)).total_seconds() / 3600
             hours = int(round(hours, 2)) - closed_window
-            logger.info(f"Diffhours: {hours}  saved: {datetime.fromtimestamp(last_time)}  now: {now}")
+            logger.info(
+                f"Diffhours: {hours}  saved: {datetime.fromtimestamp(last_time)}  now: {now}"
+            )
             if hours < green:
                 colors.append("green")
             elif hours < yellow:
@@ -89,7 +87,9 @@ class Boss:
         mini_y = list(mini_frame.values())
 
         logger.info("Fetchin main bosses")
-        main_frame, main_colors = self.get_xy_and_colors(self.main, 72, 48, (12, 24, 36))
+        main_frame, main_colors = self.get_xy_and_colors(
+            self.main, 72, 48, (12, 24, 36)
+        )
         main_x = list(main_frame.keys())
         main_y = list(main_frame.values())
 

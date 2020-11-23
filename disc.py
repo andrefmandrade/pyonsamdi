@@ -1,11 +1,9 @@
-import discord
-import sqlite3
-import dotenv
-import os
 import logging
-
-from datetime import datetime
+import os
 from io import BytesIO
+
+import discord
+import dotenv
 
 from boss import boss
 
@@ -17,7 +15,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 client = discord.Client()
-bot_prefix = "!"
 
 USAGE = """
 Usage: `!report <boss_type> <dungeon> [minutes ago]`
