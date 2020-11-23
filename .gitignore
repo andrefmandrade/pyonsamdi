@@ -4,3 +4,4 @@
 __*
 .env
 .vscode
+*.log

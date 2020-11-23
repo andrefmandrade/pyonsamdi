@@ -1,19 +1,12 @@
 import logging
-import os
 from io import BytesIO
 
 import discord
-import dotenv
 
 from boss import boss
+from settings import ADMINS
 
-dotenv.load_dotenv()
-
-# Setup logging
-logging.basicConfig()
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
 client = discord.Client()
 
 USAGE = """
@@ -28,13 +21,12 @@ Usage: `!report <boss_type> <dungeon> [minutes ago]`
 
 @client.event
 async def on_ready():
-    logger.info("We have logged in as {0.user}".format(client))
+    logger.info(f"We have logged in as {client.user}")
 
 
 async def post_img(message, img: BytesIO) -> None:
     file = discord.File(img, filename="img.png")
-    embed = discord.Embed()
-    embed.set_image(url="attachment://img.png")
+    embed = discord.Embed().set_image(url="attachment://img.png")
     await message.channel.send(embed=embed, file=file)
 
 
@@ -53,12 +45,15 @@ async def on_message(message):
         logger.info(f"user {str(message.author)}: ({message.content})")
         msg = message.content[len("!report ") :].split()
         if len(msg) < 2:
-            await message.channel.send(USAGE)
-            return
+            return await message.channel.send(USAGE)
+
         boss_type = msg[0]
         dungeon = msg[1]
         if len(msg) == 3:
-            time = int(msg[2])
+            try:
+                time = int(msg[2])
+            except ValueError:
+                return await message.channel.send(USAGE)
         else:
             time = 0
 
@@ -72,7 +67,7 @@ async def on_message(message):
 
     # !debug
     elif message.content.startswith("!debug"):
-        if str(message.author) == "rsprudencio#4854":
+        if str(message.author) in ADMINS:
             await message.channel.send(f"{boss.bosses}")
         else:
             await message.channel.send("Unauthorized")
@@ -83,5 +78,5 @@ async def on_message(message):
         return
 
 
-def run_bot() -> None:
-    client.run(os.getenv("DISCORD_TOKEN"))
+def run_bot(token: str) -> None:
+    client.run(token)

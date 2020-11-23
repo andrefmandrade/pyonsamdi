@@ -3,4 +3,3 @@ python-dotenv==0.15.0
 matplotlib==3.3.3
 black==20.8b1
 flake8==3.8.4
-isort==5.6.4

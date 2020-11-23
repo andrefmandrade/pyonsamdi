@@ -7,8 +7,9 @@ from typing import Dict, List, Tuple
 
 from matplotlib import pyplot as plt
 
+from settings import DEBUG
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 JSON_FILENAME = "bosses.json"
 
 
@@ -22,9 +23,12 @@ class Boss:
         self.main = self.bosses["main"]
 
     def save(self) -> None:
-        logger.info("Saving bosses.json")
-        with open(JSON_FILENAME, "w") as f:
-            json.dump(self.bosses, f)
+        if not DEBUG:
+            logger.info("Saving bosses.json")
+            with open(JSON_FILENAME, "w") as f:
+                json.dump(self.bosses, f)
+        else:
+            logger.info("Dry-run saving bosses.json")
 
     def update(self, boss_type: str, dungeon: str, time: int) -> str:
         boss_type = boss_type.lower()
@@ -64,9 +68,7 @@ class Boss:
         for dungeon, last_time in dungeon_times.items():
             hours = (now - datetime.fromtimestamp(last_time)).total_seconds() / 3600
             hours = int(round(hours, 2)) - closed_window
-            logger.info(
-                f"Diffhours: {hours}  saved: {datetime.fromtimestamp(last_time)}  now: {now}"
-            )
+            logger.info(f"Diffhours: {hours}  saved: {datetime.fromtimestamp(last_time)}  now: {now}")
             if hours < green:
                 colors.append("green")
             elif hours < yellow:
@@ -87,9 +89,7 @@ class Boss:
         mini_y = list(mini_frame.values())
 
         logger.info("Fetchin main bosses")
-        main_frame, main_colors = self.get_xy_and_colors(
-            self.main, 72, 48, (12, 24, 36)
-        )
+        main_frame, main_colors = self.get_xy_and_colors(self.main, 72, 48, (12, 24, 36))
         main_x = list(main_frame.keys())
         main_y = list(main_frame.values())
 

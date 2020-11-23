@@ -5,9 +5,9 @@ test: lint
 lint:
 	python -m flake8 .
 	mypy --ignore-missing-imports .
-	black --check .
+	black --line-length=130 --check .
 
 format:
-	black .
+	black --line-length=130 .
 
 .PHONY: lint test all format
