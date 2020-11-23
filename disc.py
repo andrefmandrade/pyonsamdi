@@ -2,6 +2,7 @@ import discord
 import sqlite3
 import dotenv
 import os
+import logging
 
 from datetime import datetime
 from io import BytesIO
@@ -9,6 +10,11 @@ from io import BytesIO
 from boss import boss
 
 dotenv.load_dotenv()
+
+# Setup logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 client = discord.Client()
 bot_prefix = "!"
@@ -25,7 +31,7 @@ Usage: `!report <boss_type> <dungeon> [minutes ago]`
 
 @client.event
 async def on_ready():
-    print("We have logged in as {0.user}".format(client))
+    logger.info("We have logged in as {0.user}".format(client))
 
 
 async def post_img(message, img: BytesIO) -> None:
@@ -40,13 +46,14 @@ async def on_message(message):
     if message.author == client.user:
         return
     message.content = message.content.lower()
-    # if message.content.startswith("!mini"):
-    #     await post_img(message, img=boss.get_plot_mini())
-    # elif message.content.startswith("!main"):
-    #     await post_img(message, img=boss.get_plot_main())
+
+    # !status
     if message.content.startswith("!status"):
         await post_img(message, img=boss.get_plot())
+
+    # !report
     elif message.content.startswith("!report"):
+        logger.info(f"user {str(message.author)}: ({message.content})")
         msg = message.content[len("!report ") :].split()
         if len(msg) < 2:
             await message.channel.send(USAGE)
@@ -57,19 +64,27 @@ async def on_message(message):
             time = int(msg[2])
         else:
             time = 0
-           
+
         await message.channel.send(boss.update(boss_type, dungeon, time))
+
+    # !save
     elif message.content.startswith("!save"):
+        logger.info(f"user {str(message.author)} saved database!")
         boss.save()
         await message.channel.send("Database saved")
+
+    # !debug
     elif message.content.startswith("!debug"):
         if str(message.author) == "rsprudencio#4854":
             await message.channel.send(f"{boss.bosses}")
         else:
             await message.channel.send("Unauthorized")
+
+    # !help
     elif message.content.startswith("!help"):
         await message.channel.send(USAGE)
         return
 
 
-client.run(os.getenv("DISCORD_TOKEN"))
+def run_bot() -> None:
+    client.run(os.getenv("DISCORD_TOKEN"))
