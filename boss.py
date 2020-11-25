@@ -12,6 +12,11 @@ from settings import DEBUG
 logger = logging.getLogger(__name__)
 JSON_FILENAME = "bosses.json"
 
+MINI_CLOSED_WINDOW = 12
+MINI_OPEN_WINDOW = 12
+MAIN_CLOSED_WINDOW = 72
+MAIN_OPEN_WINDOW = 48
+
 
 class Boss:
     def __init__(self):
@@ -54,42 +59,38 @@ class Boss:
         self.save()
         return f"Updated {boss_type} {dungeon} last killed at {reported}. Previous date was {previous}"
 
-    def get_xy_and_colors(
-        self,
-        dungeon_times: Dict,
-        closed_window: int,
-        open_window: int,
-        thresholds: Tuple[int, int, int],
-    ) -> Tuple[Dict, List]:
+    def get_xy_and_colors(self, dungeon_times: Dict, closed_window: int, open_window: int) -> Tuple[Dict, List]:
         xy = {}
         colors = []
         now = datetime.now()
-        green, yellow, orange = thresholds
+
         for dungeon, last_time in dungeon_times.items():
             hours = (now - datetime.fromtimestamp(last_time)).total_seconds() / 3600
             hours = int(round(hours, 2)) - closed_window
-            logger.info(f"Diffhours: {hours}  saved: {datetime.fromtimestamp(last_time)}  now: {now}")
-            if hours < green:
-                colors.append("green")
-            elif hours < yellow:
-                colors.append("yellow")
-            elif hours < orange:
-                colors.append("orange")
-            else:
-                colors.append("red")
-
             xy[dungeon] = (hours / open_window) * 100
+            logger.info(f"Diffhours: {hours} [{xy[dungeon]}%] saved: {datetime.fromtimestamp(last_time)}  now: {now}")
+
+            if xy[dungeon] < 25:
+                colors.append("green")
+            elif xy[dungeon] < 50:
+                colors.append("yellow")
+            elif xy[dungeon] < 75:
+                colors.append("orange")
+            elif xy[dungeon] < 100:
+                colors.append("red")
+            else:
+                colors.append("grey")
 
         return xy, colors
 
     def get_plot(self) -> BytesIO:
         logger.info("Fetching mini bosses")
-        mini_frame, mini_colors = self.get_xy_and_colors(self.mini, 12, 12, (3, 6, 9))
+        mini_frame, mini_colors = self.get_xy_and_colors(self.mini, MINI_CLOSED_WINDOW, MINI_OPEN_WINDOW)
         mini_x = list(mini_frame.keys())
         mini_y = list(mini_frame.values())
 
         logger.info("Fetchin main bosses")
-        main_frame, main_colors = self.get_xy_and_colors(self.main, 72, 48, (12, 24, 36))
+        main_frame, main_colors = self.get_xy_and_colors(self.main, MAIN_CLOSED_WINDOW, MAIN_OPEN_WINDOW)
         main_x = list(main_frame.keys())
         main_y = list(main_frame.values())
 
