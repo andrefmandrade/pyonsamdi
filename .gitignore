@@ -5,3 +5,4 @@ __*
 .env
 .vscode
 *.log
+bosses.json

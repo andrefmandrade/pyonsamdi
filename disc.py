@@ -34,11 +34,17 @@ async def post_img(message, img: BytesIO) -> None:
 async def on_message(message):
     if message.author == client.user:
         return
+    elif str(message.author) == "UO Outlands #livefeed-pvm#0000":
+        if message.content.startswith("The Shrine") or message.content.startswith("An Omni Realm"):
+            await message.channel.send("@here")
     message.content = message.content.lower()
 
     # !status
     if message.content.startswith("!status"):
-        await post_img(message, img=boss.get_plot())
+        if "detailed" in message.content:
+            await message.channel.send(boss.status_detailed())
+        else:
+            await post_img(message, img=boss.status_plot())
 
     # !report
     elif message.content.startswith("!report"):

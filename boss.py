@@ -83,7 +83,7 @@ class Boss:
 
         return xy, colors
 
-    def get_plot(self) -> BytesIO:
+    def status_plot(self) -> BytesIO:
         logger.info("Fetching mini bosses")
         mini_frame, mini_colors = self.get_xy_and_colors(self.mini, MINI_CLOSED_WINDOW, MINI_OPEN_WINDOW)
         mini_x = list(mini_frame.keys())
@@ -111,6 +111,21 @@ class Boss:
         plt.close("all")
         buffer.seek(0)
         return buffer
+
+    def status_detailed(self) -> str:
+        now = datetime.now()
+        msg = "```apache\n. LAST REPORTS\n"
+        for dungeon, time in self.mini.items():
+            time = datetime.fromtimestamp(time)
+            delta = int((now - time).total_seconds() // 60)
+            hour, minute = divmod(delta, 60)
+            msg += f"Mini {dungeon} - {time.strftime('%d %b %H:%M')} - {hour}h{minute}min ago\n"
+        for dungeon, time in self.main.items():
+            time = datetime.fromtimestamp(time)
+            delta = int((now - time).total_seconds() // 60)
+            hour, minute = divmod(delta, 60)
+            msg += f"\nMain {dungeon} - {time.strftime('%d %b %H:%M')} - {hour}h{minute}min ago\n"
+        return msg + '\n```'
 
 
 boss = Boss()
