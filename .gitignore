@@ -1,0 +1,8 @@
+.mypy_cache
+*.db
+.idea
+__pycache__
+.env
+.vscode
+*.log
+bosses.json
