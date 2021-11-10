@@ -4,7 +4,7 @@ from io import BytesIO
 
 import discord
 
-from boss import boss
+from boss import BOSSES, MINI_BOSSES, boss
 from settings import ADMINS
 
 logger = logging.getLogger(__name__)
@@ -48,8 +48,13 @@ async def on_message(message):
     elif str(message.author) == "UO Outlands #livefeed-pvm#0000":
         if message.content.startswith("The Shrine") or message.content.startswith("An Omni Realm"):
             await message.channel.send("@here")
-    message.content = message.content.lower()
+    elif str(message.author) == "UltiMon#6131":
+        if report_me := next(filter(lambda boss: boss in message.content, BOSSES), None):
+            await message.channel.send(boss.update("main", BOSSES[report_me], 0))
+        elif report_me := next(filter(lambda boss: boss in message.content, MINI_BOSSES), None):
+            await message.channel.send(boss.update("mini", MINI_BOSSES[report_me], 0))
 
+    message.content = message.content.lower()
     # !status
     if message.content.startswith("!status"):
         if "detailed" in message.content:

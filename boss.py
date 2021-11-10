@@ -17,6 +17,32 @@ MINI_OPEN_WINDOW = 12
 MAIN_CLOSED_WINDOW = 24
 MAIN_OPEN_WINDOW = 24
 
+BOSSES = {
+    "Aegis High Priestess": "Aegis",
+    "Behemoth Basilisk": "Cavernam",
+    "Emperor Dragon": "Nusero",
+    "The Forgotten King": "Ossuary",
+    "Gatekeeper": "Mausoleum",
+    "Great Sunken Serpent": "Pulma",
+    "Infernus": "Inferno",
+    "Lord Bile": "Darkmire",
+    "Terathan Goliath": "Petram",
+    "Gargoyle Primogen": "Cathedral",
+}
+
+MINI_BOSSES = {
+    "Sanguineous": "Aegis",
+    "Great Abyssal Hornbeast": "Cavernam",
+    "Pit Dragon": "Nusero",
+    "Speaker For The Dead": "Ossuary",
+    "Cistern Gorgon": "Mausoleum",
+    "Ancient Drowned Dragon": "Pulma",
+    "Heart Of The Mountain": "Inferno",
+    "The Terrorwood": "Darkmire",
+    "Lodestone": "Petram",
+    "Gargoyle Archon": "Cathedral",
+}
+
 
 class Boss:
     def __init__(self):
