@@ -43,16 +43,14 @@ async def post_img(message, img: BytesIO) -> None:
 
 @client.event
 async def on_message(message):
-    if message.author == client.user:
-        return
-    elif str(message.author) == "UO Outlands #livefeed-pvm#0000":
+    if str(message.author) == "UO Outlands #livefeed-pvm#0000":
         if message.content.startswith("The Shrine") or message.content.startswith("An Omni Realm"):
             await message.channel.send("@here")
     elif str(message.author) == "UltiMon#6131":
         if report_me := next(filter(lambda boss: boss in message.content, BOSSES), None):
-            await message.channel.send(boss.update("main", BOSSES[report_me], 0))
+            await message.channel.send(boss.update("main", BOSSES[report_me], 60))
         elif report_me := next(filter(lambda boss: boss in message.content, MINI_BOSSES), None):
-            await message.channel.send(boss.update("mini", MINI_BOSSES[report_me], 0))
+            await message.channel.send(boss.update("mini", MINI_BOSSES[report_me], 60))
 
     message.content = message.content.lower()
     # !status
